@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lim Kopi Weekly Message</title>
+<style>
+:root{--bg:#f4f1ec;--card:#fff;--text:#1f2a24;--muted:#6b756f;--line:#d9d4cb;--accent:#128c4a;--accent-t:#fff;--chip:#eef3ef;--bubble:#d9fdd3;--bubble-t:#111b21;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#111613;--card:#1b231e;--text:#e8efe9;--muted:#98a59d;--line:#2e3a33;--accent:#25b865;--accent-t:#06210f;--chip:#243029;--bubble:#005c4b;--bubble-t:#e9edef}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#111613;--card:#1b231e;--text:#e8efe9;--muted:#98a59d;--line:#2e3a33;--accent:#25b865;--accent-t:#06210f;--chip:#243029;--bubble:#005c4b;--bubble-t:#e9edef}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:520px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:4px 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+label.t{display:block;font-weight:700;margin:4px 0 6px;font-size:17px}
+.sub{color:var(--muted);font-size:13px;margin:8px 0 4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips span{display:inline-block;padding:8px 12px;border:1px solid var(--line);background:var(--chip);border-radius:999px;cursor:pointer;user-select:none}
+.chips input:checked+span{background:var(--accent);color:var(--accent-t);border-color:var(--accent)}
+.chips input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.sec{margin-bottom:12px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+input[type=text],input[type=tel]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font:inherit;margin-bottom:12px}
+.bubble{background:var(--bubble);color:var(--bubble-t);border-radius:10px;padding:8px 10px;white-space:pre-wrap;word-break:break-word;font-size:15px;line-height:1.45;min-height:34px}
+.bubble b{font-weight:700}
+.btns{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+button,a.btn{flex:1;min-width:120px;text-align:center;text-decoration:none;padding:12px;border-radius:10px;border:1px solid var(--accent);font:inherit;font-weight:600;cursor:pointer}
+.primary{background:var(--accent);color:var(--accent-t)}
+.ghost{background:transparent;color:var(--accent)}
+.hint{color:var(--muted);font-size:13px;margin:8px 0 0}
+@media (max-width:380px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Lim Kopi Weekly Message</h1>
+
+<div class="card">
+  <div class="sec"><label class="t">Date</label><div id="date"></div></div>
+  <div class="sec"><label class="t">Dimsum of the week</label><div id="dish"></div></div>
+
+  <label class="t" for="other">Other dishes (optional)</label>
+  <input id="other" type="text" placeholder="e.g. Egg Tart, Yam Cake (separate with commas)" autocomplete="off">
+
+  <div class="row">
+    <div><label class="t" for="start">Starts</label><input id="start" type="text" value="9.30am" autocomplete="off"></div>
+    <div><label class="t" for="early">Setup help from</label><input id="early" type="text" value="9am" autocomplete="off"></div>
+  </div>
+
+  <label class="t" for="venue">Venue</label>
+  <input id="venue" type="text" value="Day Care Centre (Level 3)" autocomplete="off">
+
+  <label class="t" for="phone">WhatsApp number (optional)</label>
+  <input id="phone" type="tel" placeholder="e.g. 6591234567 (country code, no +)">
+</div>
+
+<div class="card">
+  <label class="t">Message preview</label>
+  <div class="bubble" id="preview"></div>
+  <div class="btns">
+    <a class="btn primary" id="send" href="#" target="_blank" rel="noopener">Send to WhatsApp</a>
+    <button class="ghost" id="copy" type="button">Copy message</button>
+  </div>
+  <div class="btns"><button class="ghost" id="next" type="button">Next week (clear dishes)</button></div>
+  <p class="hint" id="status">Leave the number blank to choose the group inside WhatsApp. After sending, add the role poll in the chat.</p>
+  <textarea id="manual" readonly style="display:none;width:100%;margin-top:8px;min-height:110px;font:inherit;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text)"></textarea>
+</div>
+</div>
+
+<script>
+var DISHES=["Prawn Har Gao","Siew Mai","Chee Cheong Fun","Char Siew Bao","Lo Mai Gai","Turnip Cake","Xiao Long Bao","Egg Tart"];
+var $=function(i){return document.getElementById(i)};
+var FRI=[];
+
+function buildFridays(){
+  var d=new Date();d.setHours(12,0,0,0);
+  d.setDate(d.getDate()+((5-d.getDay()+7)%7));
+  for(var n=0;n<4;n++){FRI.push(new Date(d.getTime()));d.setDate(d.getDate()+7)}
+  var box=$("date"),row=document.createElement("div");row.className="chips";
+  FRI.forEach(function(f,n){
+    var l=document.createElement("label"),i=document.createElement("input");
+    i.type="radio";i.name="date";i.value=n;if(n===0)i.checked=true;i.addEventListener("change",update);
+    var s=document.createElement("span");
+    s.textContent=f.toLocaleDateString("en-SG",{weekday:"short",day:"numeric",month:"short"})+(n===0?" (this Fri)":"");
+    l.appendChild(i);l.appendChild(s);row.appendChild(l);
+  });
+  box.appendChild(row);
+}
+
+function buildDishes(){
+  var row=document.createElement("div");row.className="chips";
+  DISHES.forEach(function(v){
+    var l=document.createElement("label"),i=document.createElement("input");
+    i.type="checkbox";i.value=v;i.addEventListener("change",update);
+    var s=document.createElement("span");s.textContent=v;
+    l.appendChild(i);l.appendChild(s);row.appendChild(l);
+  });
+  $("dish").appendChild(row);
+}
+
+function dishList(){
+  var a=Array.prototype.map.call($("dish").querySelectorAll("input:checked"),function(i){return i.value});
+  $("other").value.split(",").forEach(function(x){x=x.trim();if(x)a.push(x)});
+  return a.join(", ");
+}
+
+function build(){
+  var sel=document.querySelector('input[name="date"]:checked');
+  var n=sel?+sel.value:0,f=FRI[n];
+  var long=f.toLocaleDateString("en-SG",{day:"numeric",month:"long"});
+  var when=n===0?"this Friday, "+long:"on Friday, "+long;
+  var assist=n===0?"this Friday":"on Friday, "+long;
+  var dishes=dishList()||"(to be announced)";
+  return [
+    "Good Morning Everyone,","",
+    "Lim Kopi is happening "+when+", from "+$("start").value.trim()+" onwards.","",
+    "If you\u2019re able to come earlier to help with the setup, please come in at "+$("early").value.trim()+".","",
+    "*Venue:* "+$("venue").value.trim(),"",
+    "*Dimsum of the week:* "+dishes,"",
+    "If you\u2019re able to assist "+assist+", please select a role from the poll.",
+    "If you\u2019re unable to join us, please select \u201CUnable to come\u201D.","",
+    "Thank you!"
+  ].join("\n");
+}
+
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function update(){
+  var m=build();
+  $("preview").innerHTML=esc(m).replace(/\*([^*\n]+)\*/g,"<b>$1</b>");
+  var p=$("phone").value.replace(/\D/g,"");
+  $("send").href="https://wa.me/"+p+"?text="+encodeURIComponent(m);
+  try{
+    localStorage.setItem("limkopi_phone",$("phone").value);
+    localStorage.setItem("limkopi_start",$("start").value);
+    localStorage.setItem("limkopi_early",$("early").value);
+    localStorage.setItem("limkopi_venue",$("venue").value);
+  }catch(e){}
+}
+
+function legacyCopy(m){
+  var t=document.createElement("textarea");t.value=m;
+  t.style.cssText="position:fixed;top:0;left:0;opacity:0;font-size:16px";
+  document.body.appendChild(t);
+  t.contentEditable=true;t.focus();t.select();t.setSelectionRange(0,t.value.length);
+  var ok=false;try{ok=document.execCommand("copy")}catch(e){}
+  document.body.removeChild(t);return ok;
+}
+function showManual(m){
+  var b=$("manual");b.style.display="block";b.value=m;b.focus();b.select();b.setSelectionRange(0,m.length);
+  $("status").textContent="Auto-copy was blocked. The message is selected below: tap Copy in the pop-up, or press and hold and choose Copy.";
+}
+$("copy").addEventListener("click",function(){
+  var m=build();
+  if(legacyCopy(m)){$("status").textContent="Copied. Paste it into WhatsApp.";return}
+  try{navigator.clipboard.writeText(m).then(function(){$("status").textContent="Copied. Paste it into WhatsApp."},function(){showManual(m)})}catch(e){showManual(m)}
+});
+$("next").addEventListener("click",function(){
+  document.querySelectorAll("#dish input").forEach(function(i){i.checked=false});
+  document.querySelector('input[name="date"][value="0"]').checked=true;
+  $("other").value="";$("manual").style.display="none";update();
+  $("status").textContent="Ready for next week.";
+});
+
+buildFridays();buildDishes();
+try{
+  var k={phone:"phone",start:"start",early:"early",venue:"venue"};
+  Object.keys(k).forEach(function(id){var v=localStorage.getItem("limkopi_"+id);if(v)$(id).value=v});
+}catch(e){}
+["other","start","early","venue","phone"].forEach(function(i){$(i).addEventListener("input",update)});
+update();
+</script>
+</body>
+</html>
