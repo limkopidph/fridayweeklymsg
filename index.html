@@ -41,7 +41,7 @@ button,a.btn{flex:1;min-width:120px;text-align:center;text-decoration:none;paddi
 
 <div class="card">
   <div class="sec"><label class="t">Date</label><div id="date"></div></div>
-  <div class="sec"><label class="t">Dimsum of the week</label><div id="dish"></div></div>
+  <div class="sec"><label class="t">Dim Sum of the week</label><div id="dish"></div></div>
 
   <label class="t" for="other">Other dishes (optional)</label>
   <input id="other" type="text" placeholder="e.g. Egg Tart, Yam Cake (separate with commas)" autocomplete="off">
@@ -119,11 +119,11 @@ function build(){
   var assist=n===0?"this Friday":"on Friday, "+long;
   var dishes=dishList()||"(to be announced)";
   return [
-    "Good Morning Everyone,","",
+    "Good Day Everyone,","",
     "Lim Kopi is happening "+when+", from "+$("start").value.trim()+" onwards.","",
     "If you\u2019re able to come earlier to help with the setup, please come in at "+$("early").value.trim()+".","",
     "*Venue:* "+$("venue").value.trim(),"",
-    "*Dimsum of the week:* "+dishes,"",
+    "*Dim Sum of the week:* "+dishes,"",
     "If you\u2019re able to assist "+assist+", please sign up for a role here:",
     "https://forms.gle/TWFCMSHkmYetgYzE9","",
     "If you\u2019re unable to join us, please select \u201CUnable To Come\u201D in the form.","",
