@@ -41,7 +41,7 @@ button,a.btn{flex:1;min-width:120px;text-align:center;text-decoration:none;paddi
 
 <div class="card">
   <div class="sec"><label class="t">Date</label><div id="date"></div></div>
-  <div class="sec"><label class="t">Dim Sum of the week</label><div id="dish"></div></div>
+  <div class="sec"><label class="t">Dimsum of the week</label><div id="dish"></div></div>
 
   <label class="t" for="other">Other dishes (optional)</label>
   <input id="other" type="text" placeholder="e.g. Egg Tart, Yam Cake (separate with commas)" autocomplete="off">
@@ -56,6 +56,9 @@ button,a.btn{flex:1;min-width:120px;text-align:center;text-decoration:none;paddi
 
   <label class="t" for="phone">WhatsApp number (optional)</label>
   <input id="phone" type="tel" placeholder="e.g. 6591234567 (country code, no +)">
+
+  <label class="t" for="hook">Form update link (one-time setup)</label>
+  <input id="hook" type="text" placeholder="Paste the Google Apps Script link here" autocomplete="off">
 </div>
 
 <div class="card">
@@ -66,7 +69,7 @@ button,a.btn{flex:1;min-width:120px;text-align:center;text-decoration:none;paddi
     <button class="ghost" id="copy" type="button">Copy message</button>
   </div>
   <div class="btns"><button class="ghost" id="next" type="button">Next week (clear dishes)</button></div>
-  <p class="hint" id="status">Leave the number blank to choose the group inside WhatsApp. After sending, add the role poll in the chat.</p>
+  <p class="hint" id="status">Leave the number blank to choose the group inside WhatsApp. The sign-up form link is already included in the message.</p>
   <textarea id="manual" readonly style="display:none;width:100%;margin-top:8px;min-height:110px;font:inherit;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text)"></textarea>
 </div>
 </div>
@@ -116,13 +119,14 @@ function build(){
   var assist=n===0?"this Friday":"on Friday, "+long;
   var dishes=dishList()||"(to be announced)";
   return [
-    "Good Day Everyone,","",
+    "Good Morning Everyone,","",
     "Lim Kopi is happening "+when+", from "+$("start").value.trim()+" onwards.","",
     "If you\u2019re able to come earlier to help with the setup, please come in at "+$("early").value.trim()+".","",
     "*Venue:* "+$("venue").value.trim(),"",
-    "*Dim Sum of the week:* "+dishes,"",
-    "If you\u2019re able to assist "+assist+", please select a role from the poll.",
-    "If you\u2019re unable to join us, please select \u201CUnable to come\u201D.","",
+    "*Dimsum of the week:* "+dishes,"",
+    "If you\u2019re able to assist "+assist+", please sign up for a role here:",
+    "https://forms.gle/TWFCMSHkmYetgYzE9","",
+    "If you\u2019re unable to join us, please select \u201CUnable To Come\u201D in the form.","",
     "Thank you!"
   ].join("\n");
 }
@@ -138,6 +142,7 @@ function update(){
     localStorage.setItem("limkopi_start",$("start").value);
     localStorage.setItem("limkopi_early",$("early").value);
     localStorage.setItem("limkopi_venue",$("venue").value);
+    localStorage.setItem("limkopi_hook",$("hook").value);
   }catch(e){}
 }
 
@@ -165,12 +170,23 @@ $("next").addEventListener("click",function(){
   $("status").textContent="Ready for next week.";
 });
 
+function pushForm(){
+  var base=$("hook").value.trim();
+  if(!/^https:\/\/script\.google\.com\//.test(base))return;
+  var sel=document.querySelector('input[name="date"]:checked');
+  var f=FRI[sel?+sel.value:0];
+  var iso=f.getFullYear()+"-"+("0"+(f.getMonth()+1)).slice(-2)+"-"+("0"+f.getDate()).slice(-2);
+  try{fetch(base+(base.indexOf("?")>-1?"&":"?")+"d="+iso,{mode:"no-cors"})}catch(e){}
+}
+$("send").addEventListener("click",pushForm);
+$("copy").addEventListener("click",pushForm);
+
 buildFridays();buildDishes();
 try{
-  var k={phone:"phone",start:"start",early:"early",venue:"venue"};
+  var k={phone:"phone",start:"start",early:"early",venue:"venue",hook:"hook"};
   Object.keys(k).forEach(function(id){var v=localStorage.getItem("limkopi_"+id);if(v)$(id).value=v});
 }catch(e){}
-["other","start","early","venue","phone"].forEach(function(i){$(i).addEventListener("input",update)});
+["other","start","early","venue","phone","hook"].forEach(function(i){$(i).addEventListener("input",update)});
 update();
 </script>
 </body>
