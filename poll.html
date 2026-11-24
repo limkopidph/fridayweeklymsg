@@ -3,108 +3,144 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Lim Kopi Volunteer Poll</title>
+<title>Lim Kopi Volunteer Sign-up</title>
 <style>
-:root{--bg:#f4f1ec;--card:#fff;--text:#1f2a24;--muted:#6b756f;--line:#d9d4cb;--accent:#128c4a;--accent-t:#fff;--bar:#e4e4e4;
+:root{--bg:#f4f1ec;--card:#fff;--text:#1f2a24;--muted:#6b756f;--line:#d9d4cb;--accent:#128c4a;--accent-t:#fff;--chip:#eef3ef;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#111613;--card:#1b231e;--text:#e8efe9;--muted:#98a59d;--line:#2e3a33;--accent:#25b865;--accent-t:#06210f;--bar:#2b3630}}
-:root[data-theme="dark"]{color-scheme:dark;--bg:#111613;--card:#1b231e;--text:#e8efe9;--muted:#98a59d;--line:#2e3a33;--accent:#25b865;--accent-t:#06210f;--bar:#2b3630}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#111613;--card:#1b231e;--text:#e8efe9;--muted:#98a59d;--line:#2e3a33;--accent:#25b865;--accent-t:#06210f;--chip:#243029}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#111613;--card:#1b231e;--text:#e8efe9;--muted:#98a59d;--line:#2e3a33;--accent:#25b865;--accent-t:#06210f;--chip:#243029}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 .wrap{max-width:520px;margin:0 auto;padding:16px}
 h1{font-size:20px;margin:4px 0 4px}
+h2{font-size:17px;margin:0 0 10px}
 .sub{color:var(--muted);font-size:14px;margin:0 0 14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
 label.t{display:block;font-weight:700;margin:0 0 6px}
 input[type=text]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font:inherit;margin-bottom:14px}
-.opt{padding:10px 0;border-top:1px solid var(--line)}
-.opt:first-of-type{border-top:0}
-.opt label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
-.opt input{width:22px;height:22px;margin:1px 0 0;accent-color:var(--accent);flex:none}
+.opt{border-top:1px solid var(--line)}
+.opt label{display:flex;gap:12px;align-items:center;padding:11px 0;cursor:pointer}
+.opt input{width:22px;height:22px;margin:0;accent-color:var(--accent);flex:none}
 .opt .n{flex:1}
-.opt .c{color:var(--muted);font-variant-numeric:tabular-nums}
+.opt .c{color:var(--muted);font-size:13px;white-space:nowrap}
 .opt.full .n{color:var(--muted)}
-.bar{height:6px;background:var(--bar);border-radius:3px;margin:8px 0 0 32px;overflow:hidden}
-.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
-.who{margin:4px 0 0 32px;font-size:13px;color:var(--muted)}
-button{width:100%;padding:13px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-t);font:inherit;font-weight:700;cursor:pointer;margin-top:12px}
+button{padding:13px;border-radius:10px;border:1px solid var(--accent);font:inherit;font-weight:700;cursor:pointer}
+#go{width:100%;background:var(--accent);color:var(--accent-t);margin-top:12px}
+#refresh{background:transparent;color:var(--accent);padding:6px 12px;font-size:14px;font-weight:600}
 button:disabled{opacity:.6}
 #msg{min-height:1.4em;margin:10px 0 0;font-size:14px}
 .err{color:#c0392b}.ok{color:var(--accent)}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.head h2{margin:0}
+.role{padding:10px 0;border-top:1px solid var(--line)}
+.role b{display:block;font-size:15px}
+.names{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.names span{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:14px}
+.none{color:var(--muted);font-size:14px;margin-top:4px}
 </style>
 </head>
 <body>
 <div class="wrap">
 <h1 id="title">Lim Kopi</h1>
-<p class="sub">Select one or more roles, then tap Vote. Use the same name to change your choice later.</p>
+<p class="sub">Enter your name, pick one or more tasks, then tap Submit. Use the same name to change your choice later.</p>
+
 <div class="card">
   <label class="t" for="name">Your name</label>
   <input id="name" type="text" autocomplete="name" placeholder="e.g. Falisha">
+  <label class="t">Tasks</label>
   <div id="opts"></div>
-  <button id="go" type="button">Vote</button>
+  <button id="go" type="button">Submit</button>
   <p id="msg" role="status"></p>
 </div>
+
+<div class="card">
+  <div class="head"><h2>Who has signed up</h2><button id="refresh" type="button">Refresh</button></div>
+  <div id="view"></div>
 </div>
+</div>
+
 <script>
 var API="PASTE_WEB_APP_URL_HERE";
 var $=function(i){return document.getElementById(i)};
 var S=null,built=false;
 
-function call(params){
+function jsonp(params,cb){
+  var id="cb"+Date.now()+Math.floor(Math.random()*10000),done=false,s=document.createElement("script");
+  function clean(){try{delete window[id]}catch(e){window[id]=undefined}if(s.parentNode)s.parentNode.removeChild(s)}
+  window[id]=function(d){done=true;clean();cb(null,d)};
+  s.onerror=function(){if(!done){done=true;clean();cb(new Error("load"))}};
+  params.callback=id;
   var q=Object.keys(params).map(function(k){return k+"="+encodeURIComponent(params[k])}).join("&");
-  return fetch(API+(API.indexOf("?")>-1?"&":"?")+q).then(function(r){return r.json()});
+  s.src=API+(API.indexOf("?")>-1?"&":"?")+q;
+  document.head.appendChild(s);
+  setTimeout(function(){if(!done){done=true;clean();cb(new Error("timeout"))}},15000);
 }
 function say(t,cls){var m=$("msg");m.textContent=t;m.className=cls||""}
-function label(r){return r.name+(r.cap?" x"+r.cap:"")}
 function mine(r){var n=$("name").value.trim().toLowerCase();return !!n&&r.voters.some(function(v){return String(v).toLowerCase()===n})}
+function slots(r){return r.cap?Math.max(0,r.cap-r.voters.length):null}
 
 function build(){
   var box=$("opts");box.innerHTML="";
   S.roles.forEach(function(r,i){
     var d=document.createElement("div");d.className="opt";d.id="o"+i;
-    var l=document.createElement("label");
-    var c=document.createElement("input");c.type="checkbox";c.value=r.name;
-    var n=document.createElement("span");n.className="n";n.textContent=label(r);
+    var l=document.createElement("label"),c=document.createElement("input");
+    c.type="checkbox";c.value=r.name;
+    var n=document.createElement("span");n.className="n";n.textContent=r.name+(r.cap?" x"+r.cap:"");
     var k=document.createElement("span");k.className="c";
-    l.appendChild(c);l.appendChild(n);l.appendChild(k);d.appendChild(l);
-    var b=document.createElement("div");b.className="bar";b.appendChild(document.createElement("i"));d.appendChild(b);
-    var w=document.createElement("div");w.className="who";d.appendChild(w);
-    box.appendChild(d);
+    l.appendChild(c);l.appendChild(n);l.appendChild(k);d.appendChild(l);box.appendChild(d);
   });
   built=true;
 }
-function render(keepChecks){
+function render(keep){
   $("title").textContent=S.title;
   if(!built)build();
-  var max=Math.max.apply(null,S.roles.map(function(r){return r.voters.length}).concat([1]));
   S.roles.forEach(function(r,i){
-    var d=$("o"+i),c=d.querySelector("input"),cnt=r.voters.length;
-    d.querySelector(".c").textContent=r.cap?cnt+"/"+r.cap:String(cnt);
-    d.querySelector(".bar i").style.width=(r.cap?Math.min(100,cnt/r.cap*100):cnt/max*100)+"%";
-    d.querySelector(".who").textContent=r.voters.join(", ");
-    var full=r.cap&&cnt>=r.cap&&!mine(r);
-    d.classList.toggle("full",!!full);c.disabled=!!full&&!c.checked;
-    if(!keepChecks)c.checked=mine(r);
+    var d=$("o"+i),c=d.querySelector("input"),left=slots(r),full=left===0&&!mine(r);
+    d.querySelector(".c").textContent=left===null?"":(full?"Full":left+" left");
+    d.classList.toggle("full",full);
+    if(!keep)c.checked=mine(r);
+    c.disabled=full&&!c.checked;
+  });
+  var v=$("view");v.innerHTML="";
+  S.roles.forEach(function(r){
+    var d=document.createElement("div");d.className="role";
+    var b=document.createElement("b");b.textContent=r.name+" ("+r.voters.length+(r.cap?"/"+r.cap:"")+")";
+    d.appendChild(b);
+    if(r.voters.length){
+      var w=document.createElement("div");w.className="names";
+      r.voters.forEach(function(x){var s=document.createElement("span");s.textContent=x;w.appendChild(s)});
+      d.appendChild(w);
+    }else{var e=document.createElement("div");e.className="none";e.textContent="No one yet";d.appendChild(e)}
+    v.appendChild(d);
   });
 }
+function fail(e){
+  say(e&&e.message==="timeout"||e&&e.message==="load"?"Could not reach the poll. Check your connection, or ask the organiser to check the poll link.":"Something went wrong. Please try again.","err");
+}
 function load(first){
-  if(!/^https:\/\//.test(API)){say("Setup needed: the poll link is not connected yet.","err");return}
-  call({}).then(function(s){S=s;render(!first)}).catch(function(){if(first)say("Could not load the poll. Check your connection and refresh.","err")});
+  if(!/^https:\/\//.test(API)){say("Setup needed: the poll is not connected yet.","err");return}
+  jsonp({},function(e,s){
+    if(e||!s||!s.roles){if(first)fail(e);return}
+    S=s;render(!first);
+  });
 }
 $("go").addEventListener("click",function(){
   var name=$("name").value.trim();
   var picked=Array.prototype.map.call($("opts").querySelectorAll("input:checked"),function(i){return i.value});
+  if(!/^https:\/\//.test(API)){say("Setup needed: the poll is not connected yet.","err");return}
   if(!name){say("Please enter your name.","err");return}
-  if(!picked.length){say("Please pick at least one role.","err");return}
+  if(!picked.length){say("Please pick at least one task.","err");return}
   $("go").disabled=true;say("Saving...");
-  call({vote:1,name:name,roles:picked.join("|")}).then(function(r){
+  jsonp({vote:1,name:name,roles:picked.join("|")},function(e,r){
     $("go").disabled=false;
+    if(e){fail(e);return}
     if(r.error){say(r.error,"err");load(false);return}
-    S=r;render(true);say("Thank you, your vote is saved.","ok");
-    try{localStorage.setItem("limkopi_pollname",name)}catch(e){}
-  }).catch(function(){$("go").disabled=false;say("Could not save. Please try again.","err")});
+    S=r;render(true);say("Thank you, your choice is saved.","ok");
+    try{localStorage.setItem("limkopi_pollname",name)}catch(x){}
+  });
 });
+$("refresh").addEventListener("click",function(){say("");load(false)});
 $("name").addEventListener("change",function(){if(S)render(false)});
 try{var nm=localStorage.getItem("limkopi_pollname");if(nm)$("name").value=nm}catch(e){}
 load(true);
